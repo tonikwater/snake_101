@@ -5,13 +5,13 @@ body{
     justify-content: center;
     align-items: center;
     margin: 0;
-    background-color: black;
+    background-color: white;
 }
 
 #game-board{
     background-color: #CCC;
-    width: 100vmin;
-    height: 100vmin;
+    width: 80vmin;
+    height: 80vmin;
     display: grid;
     grid-template-rows: repeat(21, 1fr);
     grid-template-columns: repeat(21, 1fr);
