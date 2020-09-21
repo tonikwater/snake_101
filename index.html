@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake</title>
-    <link rel="stylesheet" type="text/css" href="snake_client/style.css">
-    <script src="snake_client/script.js" type="module"></script>
-    <!--
-        module, because we will use different js files and not a single big one.
-    -->
+    <title>Document</title>
+    <script src="snake_client/login.js" defer></script>
 </head>
 <body>
-    <header>HELLO WORLD</header>
+    <div id="error"></div>
+    <form id="form" action="/" method="GET">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" required>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
     <div>
-        <h1 id="player-turn"></h1> 
+        <li>
+            <a href="snake_client/game.html">Join game</a>
+        </li>
     </div>
-   <div id="game-board"></div> 
 </body>
 </html>

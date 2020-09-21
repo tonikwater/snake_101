@@ -19,13 +19,17 @@ const { SNAKE_SPEED, GRID_BARRIER }  = require("./snake_server/options.js");
 const PORT = 9090;
 const wss = new WebSocket.Server({port : PORT});
 const MAX_PLAYERS = 2;
+let payLoad = null;
 let gameRunning = false;
 let gameOver = false;
 let ateFood = false;
 let clientCount = 0;
+let pseudoRandomId = 0;
+let allPlayers = {};
 let currentPlayerId = 0;
 // to ensure that player's won't overwrite others input, before drawing that input
 let nextPlayerId = 0;
+let connections = [];
 
 // serve html page
 
@@ -46,25 +50,55 @@ wss.on("connection", function connection(ws, req){
         switch(result.type){
             case "key":
                 console.log("(server) client input from "+result.playerId);
+                // fix to set inputDirection more than twice per render
+                // this is an issue/hack because its possible for players
+                // to move in directions they are not allowed to go
                 if(currentPlayerId == result.playerId){
                     inputDirection = result.input;
                 }else{
                     console.log("(server) refused input");
                 }
                 break;
+            case "login":
+                console.log("(server) login");
+                let newPlayerId = pseudoRandomId++;
+                allPlayers[newPlayerId] = result.username;
+                payLoad = {
+                    "type" : "login",
+                    "playerId" : newPlayerId,
+                };
+                ws.send(JSON.stringify(payLoad));
+                //ws.terminate();
+                break;
             case "connect":
-                //console.log("(server) new client");
+                console.log("(server) connect");
+                clientCount++;
                 //start game
                 if(!gameRunning){
                     gameRunning = true;
                     updateSnakeGame();
                     console.log("(server) starting game");
                 }
-                let payLoad = {
+                payLoad = {
                     "type" : "connect",
-                    "playerId" : clientCount++
+                    "allPlayers" : allPlayers
                 };
                 ws.send(JSON.stringify(payLoad));
+                // inform others about new player
+                let newUsername = allPlayers[result.playerId];
+                payLoad = {
+                    "type" : "join",
+                    "newUsername" : newUsername 
+                };
+                wss.clients.forEach(client => {
+                    if(client !== ws){
+                        client.send(JSON.stringify(payLoad));
+                    }
+                });
+                break;
+            case "ready":
+                console.log("(server) ready");
+                connections.push(ws);
                 break;
         }
     });
@@ -118,7 +152,7 @@ function broadcastGame(){
         "inputDirection" : inputDirection,
         "ateFood" : ateFood 
     };
-    wss.clients.forEach(client => {
+    connections.forEach(client => {
         client.send(JSON.stringify(payLoad));
     });
 }

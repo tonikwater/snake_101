@@ -5,18 +5,22 @@ import { setInputDirection } from "./input.js";
 
 // variables
 
-export let ws = new WebSocket("ws://localhost:9090");
-const gameBoard = document.getElementById("game-board");
-const playerTurn = document.getElementById("player-turn");
-export let playerId = null;
+export const ws = new WebSocket("ws://localhost:9090");
+const gameBoard = document.getElementById("game_board");
+const playerTurn = document.getElementById("player_turn");
+const players = document.getElementById("players");
+export let playerId = localStorage.getItem("playerId");
 let currentPlayerId = null;
+let allPlayers = null; // { id : username } 
 
 // client websocket
 
 ws.onopen = function(e){
-    ws.send(JSON.stringify({
-        "type" : "connect"
-    }));
+    let payLoad = {
+        "type" : "connect",
+        "playerId" : playerId
+    };
+    ws.send(JSON.stringify(payLoad));
     console.log("(client) initialized ws connection");
 }
 
@@ -27,20 +31,29 @@ ws.onmessage = function(msg){
             console.log("(client) drawing");
             let snakeBody = result.snakeBody;
             let food = result.food;
+            // EXPORT THIS VAR TO INPUT TO NOT SEND WHEN !=
             currentPlayerId = result.currentPlayerId;
             let ateFood = result.ateFood;
             if(ateFood){
                 // allows correct possible move directions after player switch
                 setInputDirection(result.inputDirection);
             }
+            // TRY LOOPING OVER CHILDS
             gameBoard.innerHTML = "";
             drawSnake(snakeBody);
             drawFood(food);
-            drawPlayerTurn(currentPlayerId);
+            drawPlayerTurn(allPlayers[currentPlayerId]);
             break;
         case "connect":
-            console.log("(client) connected");
-            playerId = result.playerId;
+            console.log("(client) you connected : "+playerId);
+            allPlayers = result.allPlayers;
+            Object.values(allPlayers).forEach(value => drawPlayerId(value));
+            subscribeBroadcast();
+            break;
+        case "join":
+            console.log("(client) someone joined");
+            let newUsername = result.newUsername;
+            drawPlayerId(newUsername);
             break;
         case "over":
             console.log("(client) GAME OVER!");
@@ -54,6 +67,14 @@ ws.onmessage = function(msg){
             alert(msg);
             break;
     }
+}
+
+function subscribeBroadcast(){
+    let payLoad = {
+        "type" : "ready",
+        "playerId" : playerId
+    };
+    ws.send(JSON.stringify(payLoad));
 }
 
 // draw functions
@@ -77,5 +98,11 @@ function drawFood(foodPos){
 }
 
 function drawPlayerTurn(currentPlayerId){
-    playerTurn.innerHTML = currentPlayerId;
+    playerTurn.textContent = currentPlayerId;
+}
+
+function drawPlayerId(pId){
+    let td = document.createElement("td");
+    td.textContent =  pId;
+    players.appendChild(td);
 }
