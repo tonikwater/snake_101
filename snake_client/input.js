@@ -1,9 +1,7 @@
 
-import { ws, playerId } from "./script.js";
+import { ws, playerId, getAllowMove, setAllowMove } from "./script.js";
 
-let inputDirection = {x:0, y:0};
-
-export function initInput (){ console.log("Hello World!"); }
+let inputDirection = { "x" : 0,  "y" :0 };
 
 export function setInputDirection(newInputDirection){
     inputDirection = newInputDirection;
@@ -11,36 +9,39 @@ export function setInputDirection(newInputDirection){
 
 window.addEventListener("keydown", e => {
     console.log("(client) keydown");
+    if(getAllowMove() == false){
+        console.log("(client) blocking");
+        return;
+    }
     switch(e.key){
         case "ArrowUp":
-            if(inputDirection.y != 0) break;
             console.log("(client) keydown UP");
-            inputDirection = {x:0, y:-1};
-            transmitKeyInput(inputDirection);
+            handleKeyInput("y", { "x" : 0,  "y" : -1 });
             break;
         case "ArrowDown":
-            if(inputDirection.y != 0) break;
             console.log("(client) keydown DOWN");
-            inputDirection = {x:0, y:1};
-            transmitKeyInput(inputDirection);
+            handleKeyInput("y", { "x" : 0,  "y" : 1 });
             break;
         case "ArrowLeft":
-            if(inputDirection.x != 0) break;
             console.log("(client) keydown LEFT");
-            inputDirection = {x:-1, y:0};
-            transmitKeyInput(inputDirection);
+            handleKeyInput("x", { "x" : -1, "y" : 0 });
             break;
         case "ArrowRight":
-            if(inputDirection.x != 0) break;
             console.log("(client) keydown RIGHT");
-            inputDirection = {x:1, y:0};
-            transmitKeyInput(inputDirection);
+            handleKeyInput("x", { "x" : 1,  "y" : 0 });
             break;
     }
 });
 
+function handleKeyInput(axis, newInputDirection){
+    if(inputDirection[axis] != 0) return;
+    setAllowMove(false);
+    inputDirection = newInputDirection; 
+    transmitKeyInput(inputDirection);
+}
+
 function transmitKeyInput(direction){
-    console.log("SENDING FROM"+playerId+" IN "+direction);
+    console.log("(client) transmitting input");
     let payLoad = {
         "type" : "key",
         "playerId" : playerId,
