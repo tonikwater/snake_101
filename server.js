@@ -16,6 +16,8 @@ const { SNAKE_SPEED, GRID_BARRIER }  = require("./snake_server/options.js");
 
 // variables
 
+
+// PORT is set in server.js login.js script.js
 const PORT = 9090;
 const wss = new WebSocket.Server({ port : PORT });
 const MAX_PLAYERS = 2;

@@ -1,7 +1,9 @@
 
 const username = document.getElementById("username"); 
 const form = document.getElementById("form");
-const ws = new WebSocket("ws://localhost:9090");
+// websocket ip depends on host ip
+// PORT is set in server.js login.js script.js
+const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 let playerId = null;
 
 form.addEventListener("submit", (e) => {

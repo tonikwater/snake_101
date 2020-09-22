@@ -5,7 +5,9 @@ import { setInputDirection } from "./input.js";
 
 // variables
 
-export const ws = new WebSocket("ws://localhost:9090");
+// websocket ip depends on host ip
+// PORT is set in server.js login.js script.js
+export const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 const gameBoard = document.getElementById("game_board");
 const playerTurn = document.getElementById("player_turn");
 const players = document.getElementById("players");
