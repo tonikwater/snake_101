@@ -24,7 +24,7 @@ const MAX_PLAYERS = 2;
 let payLoad = null;
 let gameRunning = false;
 let gameOver = false;
-let ateFood = false;
+let ateFood = true;
 let clientCount = 0;
 let pseudoRandomId = 0;
 let allPlayers = {};
@@ -102,6 +102,7 @@ wss.on("connection", function connection(ws, req){
             case "ready":
                 console.log("(server) ready");
                 connections.push(ws);
+                ateFood = true;
                 break;
         }
     });

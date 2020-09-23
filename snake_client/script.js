@@ -41,14 +41,19 @@ ws.onmessage = function(msg){
             let food = result.food;
             currentPlayerId = result.currentPlayerId;
             let ateFood = result.ateFood;
+            do{
+                let temp = gameBoard.firstChild;
+                if(temp != null && temp.className != "food"){
+                    gameBoard.removeChild(temp);
+                }
+            }while(gameBoard.firstChild);
             if(ateFood){
                 // allows correct possible move directions after player switch
+                console.log("drawing food");
                 setInputDirection(result.inputDirection);
+                drawFood(food);
             }
-            // TRY LOOPING OVER CHILDS
-            gameBoard.innerHTML = "";
             drawSnake(snakeBody);
-            drawFood(food);
             drawPlayerTurn(allPlayers[currentPlayerId]);
             break;
         case "connect":
@@ -121,5 +126,6 @@ function drawPlayerTurn(currentPlayerId){
 function drawPlayerId(pId){
     let td = document.createElement("td");
     td.textContent =  pId;
+    td.classList.add("mytext");
     players.appendChild(td);
 }

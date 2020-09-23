@@ -1,3 +1,13 @@
+:root{
+    --main-bg: #A7B9A9;
+    --main-highlight: #4A534D;
+}
+
+@keyframes myRotation{
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 body{
     height: 100vh;
     width: 100vw;
@@ -5,24 +15,46 @@ body{
     justify-content: center;
     align-items: center;
     margin: 0;
-    background-color: white;
+    background-color: var(--main-bg);
 }
 
 #game_board{
-    background-color: #CCC;
+    background-color: var(--main-bg);
+    background-image: url("cell_1.png");
+    background-repeat: repeat;
+    border: 0.1vh solid var(--main-highlight); 
+    background-size: 4% 4%;
     width: 80vmin;
     height: 80vmin;
     display: grid;
-    grid-template-rows: repeat(21, 1fr);
-    grid-template-columns: repeat(21, 1fr);
+    grid-template-rows: repeat(25, 1fr);
+    grid-template-columns: repeat(25, 1fr);
 }
 
 .snake{
-    background-color: #22ff22;
-    border: .25vmin solid black;
+    background-color: var(--main-highlight);
+    max-height: 2vmin;
+    max-width: 2vmin;
+    margin: 0.6vmin;
+    border-radius: 0.5vmin;
 }
 
 .food{
-    background-color: #ff2222;
-    border: .25vmin solid black;
+    background-color: var(--main-highlight);
+    max-height: 3vmin;
+    max-width: 3vmin;
+    margin: 0.5vmin;
+    clip-path: polygon(
+        0 25%, 50% 25%, 50% 0, 75% 0,
+        75% 50%, 100% 50%, 100% 75%, 50% 75%,
+        50% 100%, 25% 100%, 25% 50%, 0 50%
+    );
+    border-radius: 10vmin;
+    animation: myRotation 3s linear infinite;
+}
+
+.mytext{
+    text-align: center;
+    color: var(--main-highlight);
+    font-family: "Courier New", Courier, monospace;
 }
