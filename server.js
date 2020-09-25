@@ -7,25 +7,27 @@ const WebSocket = require("ws");
 
 // local imports 
 
-const { snakeBody, snakeIntersection, updateSnake, posOnSnake } = require("./snake_server/snake.js");
-let { inputDirection } = require("./snake_server/snake.js");
-const { updateFood } = require("./snake_server/food.js");
-let { food } = require("./snake_server/food.js");
+const { snakeIntersection, updateSnake, posOnSnake, resetSnakePos, resetInputDirection } = require("./snake_server/snake.js");
+const { updateFood, resetFoodPos } = require("./snake_server/food.js");
 const { outsideGrid }  = require("./snake_server/grid.js");
-const { SNAKE_SPEED, GRID_BARRIER }  = require("./snake_server/options.js");
+const { SNAKE_SPEED, GRID_BARRIER, GROW_LEN }  = require("./snake_server/options.js");
+const snake = require("./snake_server/snake.js");
 
 // variables
-
 
 // PORT is set in server.js login.js script.js
 const PORT = 9090;
 const wss = new WebSocket.Server({ port : PORT });
-const MAX_PLAYERS = 2;
 let payLoad = null;
+const MAX_PLAYERS = 2;
+let inputDirection = resetInputDirection();
+let snakeBody = resetSnakePos();
+let food = resetFoodPos(snakeBody);
 let gameRunning = false;
 let gameOver = false;
-let ateFood = true;
-let clientCount = 0;
+let ateFood = false;
+let playerCount = 0;
+let restartCount = 0;
 let pseudoRandomId = 0;
 let allPlayers = {};
 let currentPlayerId = 0;
@@ -45,7 +47,7 @@ app.use("/snake_client", express.static("./snake_client/"));
 
 wss.on("connection", function connection(ws, req){
     console.log("(server) connection");
-    if(clientCount == MAX_PLAYERS){
+    if(playerCount == MAX_PLAYERS){
         console.log("(server) refused connection");
         ws.terminate();
     }
@@ -63,7 +65,10 @@ wss.on("connection", function connection(ws, req){
             case "login":
                 console.log("(server) login");
                 newPlayerId = pseudoRandomId++;
-                allPlayers[newPlayerId] = result.username;
+                allPlayers[newPlayerId] = {
+                    username: result.username,
+                    score: 0
+                };
                 payLoad = {
                     "type" : "login",
                     "playerId" : newPlayerId,
@@ -73,21 +78,24 @@ wss.on("connection", function connection(ws, req){
                 break;
             case "connect":
                 console.log("(server) connect");
-                clientCount++;
-                //start game
+                playerCount++;
+                // start game
                 if(!gameRunning){
                     gameRunning = true;
-                    updateSnakeGame();
+                    updateSnakeGame(); // trigger once
+                    // DEBUGG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    setTimeout(overToDebug, 5000);
                     console.log("(server) starting game");
                 }
                 payLoad = {
                     "type" : "connect",
-                    "allPlayers" : allPlayers
+                    "allPlayers" : allPlayers,
+                    growLen: GROW_LEN
                 };
                 ws.send(JSON.stringify(payLoad));
                 // inform others about new player
                 newPlayerId = result.playerId;
-                let newUsername = allPlayers[newPlayerId];
+                let newUsername = allPlayers[newPlayerId].username;
                 payLoad = {
                     "type" : "join",
                     "newPlayerId" : newPlayerId,
@@ -102,11 +110,26 @@ wss.on("connection", function connection(ws, req){
             case "ready":
                 console.log("(server) ready");
                 connections.push(ws);
-                ateFood = true;
+                break;
+            case "restart":
+                console.log("(server) restart request");
+                restartCount++;
+                if(restartCount < MAX_PLAYERS) return;
+                console.log("(server) restarting");
+                restartCount = 0;
+                gameOver = false;
+                inputDirection = resetInputDirection(); 
+                snakeBody = resetSnakePos();
+                food = resetFoodPos(snakeBody);
+                updateSnakeGame();
                 break;
         }
     });
 });
+
+function overToDebug(){
+    gameOver = true;
+}
 
 // main game functions 
 
@@ -134,10 +157,10 @@ function updateSnakeGame(){
 
 function update(){
     console.log("(server) update");
-    updateSnake(inputDirection);
-    if(posOnSnake(food)){
+    snakeBody = updateSnake(snakeBody, inputDirection);
+    if(posOnSnake(snakeBody, food)){
         // player switch happens
-        food = updateFood(food);
+        food = updateFood(snakeBody);
         ateFood = true;
         nextPlayerId = currentPlayerId == 0 ? 1 : 0;
     }
@@ -146,6 +169,7 @@ function update(){
 
 function broadcastGame(){
     console.log("(server) broadcast");
+    console.log(`live: x=${snakeBody[0].x} y=${snakeBody[0].y})`);
     let payLoad = {
         "type" : "new",
         "snakeBody" : snakeBody,
@@ -163,6 +187,6 @@ function checkAlive(){
     if(GRID_BARRIER){
         gameOver = outsideGrid(snakeBody[0]) || snakeIntersection();
     }else{
-        gameOver = snakeIntersection();
+        gameOver = snakeIntersection(snakeBody);
     }
 }

@@ -6,22 +6,32 @@
     <title>Snake</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="script.js" type="module"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <!--
         module, because we will use different js files and not a single big one.
     -->
 </head>
 <body>
     <ul>
-        <h1 class="mytext">Snake 1vs1</h1>
+        <h1 class="mytext">Snake 101</h1>
         <table>
             <tr id="players">
                 <th class="mytext">Players</th>
             </tr>
+            <tr id="scores">
+                <th class="mytext">Scores</th>
+            </tr>
             <tr>
-                <th class="mytext">Playing now</th>
-                <td class="mytext" id="player_turn"></td> 
+                <th class="mytext">Length</th>
+                <td class="mytext" id="snake_len"></td>
             </tr>
         </table>
+
+        <div id="restart_dialog">
+            <p id="restart_content"></p>
+        </div>
 
         <div id="game_board"></div> 
     </ul> 

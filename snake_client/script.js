@@ -9,16 +9,16 @@ import { setInputDirection } from "./input.js";
 // PORT is set in server.js login.js script.js
 export const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 const gameBoard = document.getElementById("game_board");
-const playerTurn = document.getElementById("player_turn");
-const players = document.getElementById("players");
 export let playerId = localStorage.getItem("playerId");
 let currentPlayerId = null;
-let allPlayers = null; // { id : username }
+let allPlayers = null; // { id: { username: u, score: s } }
 // prevents from cheating when inputing more than 1 key per render
 // at 1st set to valid move, then to move which is possible from this move
 // but not the one before => move gets rendered which is illegal
 // in terms of the game rules
 let allowMove = false;
+let snakeLen = 1;
+let growLen = null;
 
 // client websocket
 
@@ -35,50 +35,86 @@ ws.onmessage = function(msg){
     const result = JSON.parse(msg.data);
     switch(result.type){
         case "new":
-            console.log("(client) drawing");
             allowMove = true;
             let snakeBody = result.snakeBody;
             let food = result.food;
             currentPlayerId = result.currentPlayerId;
+            console.log("(client) drawing", snakeBody, result.inputDirection, currentPlayerId);
             let ateFood = result.ateFood;
-            do{
-                let temp = gameBoard.firstChild;
-                if(temp != null && temp.className != "food"){
-                    gameBoard.removeChild(temp);
-                }
-            }while(gameBoard.firstChild);
+            gameBoard.textContent = "";
             if(ateFood){
                 // allows correct possible move directions after player switch
-                console.log("drawing food");
                 setInputDirection(result.inputDirection);
-                drawFood(food);
+                snakeLen += growLen;
             }
             drawSnake(snakeBody);
-            drawPlayerTurn(allPlayers[currentPlayerId]);
+            drawFood(food);
+            drawPlayerTurn(currentPlayerId);
+            drawSnakeLen(snakeLen); 
             break;
         case "connect":
             console.log(`(client) you connected: ${playerId}`);
             allPlayers = result.allPlayers;
-            Object.values(allPlayers).forEach(value => drawPlayerId(value));
+            growLen = result.growLen;
+            Object.entries(allPlayers).forEach(([id, info]) => {
+                drawPlayerId(id, info.username)
+                drawScoreElem(id);
+            });
             subscribeBroadcast();
             break;
         case "join":
             console.log("(client) someone joined");
             let newPlayerId = result.newPlayerId;
-            let newUsername = result.newUsername;
-            allPlayers[newPlayerId] = newUsername;
-            drawPlayerId(newUsername);
+            if(allPlayers[newPlayerId] === undefined){
+                let newUsername = result.newUsername;
+                allPlayers[newPlayerId] = {
+                    username: newUsername,
+                    score: 0
+                };
+                drawPlayerId(newPlayerId, newUsername);
+                drawScoreElem(newPlayerId);
+            }
             break;
         case "over":
-            console.log("(client) GAME OVER!");
+            console.log("(client) GAME OVER!"+result.currentPlayerId+playerId);
             currentPlayerId = result.currentPlayerId;
+            let title = null;
             let msg = null; 
             if(currentPlayerId != playerId){
-                msg = `CONGRATS, ${allPlayers[playerId]} ! You won !`;
+                title = `CONGRATS, ${allPlayers[playerId].username} !`;
+                msg = "You won !";
+                console.log("winner"+title+msg);
             }else{
-                msg = `GAME OVER, ${allPlayers[playerId]} ! Maybe next time !`; 
+                title = `GAME OVER, ${allPlayers[playerId].username} !`;
+                msg = "Maybe next time !";
+                console.log("looser"+title+msg);
             }
-            alert(msg);
+            let buttons = {
+                    "Play again" : function(){
+                        console.log("(client) play again");
+                        let payLoad = {
+                            type: "restart"
+                        };
+                        ws.send(JSON.stringify(payLoad));
+                        jQuery(this).dialog("close");
+                    },
+                    "Cancel" : function(){
+                        console.log("(client) stop playing");
+                        jQuery(this).dialog("close");
+                    }
+            }
+            jQuery("#restart_content").text(msg);
+            jQuery("#restart_dialog").dialog({
+                title: title,
+                resizable: false,
+                height: "auto", // adjust based on content
+                width: 500,
+                modal: true, // disable other items
+                buttons: buttons 
+            });
+            drawScoreValue(currentPlayerId);
+            setInputDirection({x: 0, y: 0});
+            snakeLen = 1;
             break;
     }
 }
@@ -101,6 +137,8 @@ export function setAllowMove(newAllowMove){
 
 // draw functions
 
+drawSnakeLen(snakeLen);
+
 function drawSnake(snakeBody){
     snakeBody.forEach(part =>{
         const snakeElem = document.createElement("div"); // create html elem
@@ -119,13 +157,42 @@ function drawFood(foodPos){
     gameBoard.appendChild(foodElem); // make this div elem child of the div game-board
 }
 
-function drawPlayerTurn(currentPlayerId){
-    playerTurn.textContent = currentPlayerId;
+function drawPlayerId(id, username){
+    let td = $("<td></td>");
+    td.prop("class", "mytext");
+    td.prop("id", `p_${id}`);
+    td.text(username);
+    $("#players").append(td);
 }
 
-function drawPlayerId(pId){
-    let td = document.createElement("td");
-    td.textContent =  pId;
-    td.classList.add("mytext");
-    players.appendChild(td);
+function drawPlayerTurn(currentPlayerId){
+    let value = null;
+    Object.keys(allPlayers).forEach(playerId => {
+        if(playerId == currentPlayerId){
+            value = "0.1vmin dashed var(--main-highlight)";
+        }else{
+            value = "initial";
+        }
+        $(`#p_${playerId}`).css("border", value);
+    });
+}
+
+function drawScoreElem(id){
+    let td = $("<td></td>");
+    td.prop("class", "mytext");
+    td.prop("id", `s_${id}`);
+    td.text(allPlayers[id].score);
+    $("#scores").append(td);
+}
+
+function drawScoreValue(looserId){
+    Object.keys(allPlayers).forEach(playerId => {
+        if(playerId != looserId){
+            $(`#s_${playerId}`).text(++allPlayers[playerId].score);
+        }
+    });
+}
+
+function drawSnakeLen(len){
+    $("#snake_len").text(len);
 }

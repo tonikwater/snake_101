@@ -40,6 +40,8 @@ body{
 }
 
 .food{
+    /* animated food */
+    /*
     background-color: var(--main-highlight);
     max-height: 3vmin;
     max-width: 3vmin;
@@ -50,7 +52,15 @@ body{
         50% 100%, 25% 100%, 25% 50%, 0 50%
     );
     border-radius: 10vmin;
-    animation: myRotation 3s linear infinite;
+    animation: myRotation 0.5s linear infinite;
+    */
+    /* static food */
+    background-color: var(--main-highlight);
+    max-height: 2.5vmin;
+    max-width: 2.5vmin;
+    margin: 0.9vmin;
+    border-radius: 1vmin;
+    transform: rotate(45deg);
 }
 
 .mytext{

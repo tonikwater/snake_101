@@ -2,15 +2,20 @@
 const { randomGridPos, outsideGrid } = require("./grid.js");
 const { GRID_SIZE, GRID_BARRIER } = require("./options.js");
 
-let inputDirection = {x:0, y:0};
-
-const snakeBody = [randomGridPos()];
 let remaining_growth = 0;
 
-function updateSnake(inputDirection){
+function resetInputDirection(){
+    return {x: 0, y: 0};
+}
+
+function resetSnakePos(){
+    return [randomGridPos()];
+}
+
+function updateSnake(snakeBody, inputDirection){
 
     // let snake grow
-    snakeGrow();
+    snakeGrow(snakeBody);
 
     // move everything behind the head
     for(let i = snakeBody.length-1; i >= 1; i--){
@@ -22,6 +27,8 @@ function updateSnake(inputDirection){
     let head = snakeBody[0];
     head.x += inputDirection.x;
     head.y += inputDirection.y;
+
+    console.log(`snake: x=${head.x} y=${head.y})`);
 
     // continue snake on opposite side if overlap
     if(!GRID_BARRIER && outsideGrid(head)){
@@ -35,13 +42,16 @@ function updateSnake(inputDirection){
             head.y = 1;
         }
     }
+
+    return snakeBody;
 }
 
 function expandSnake(amount){
     remaining_growth += amount;
 }
 
-function posOnSnake(pos, {ignoreHead=false}={}){
+function posOnSnake(snakeBody, pos, {ignoreHead=false}={}){
+    console.log(`(posOnSnake) x=${snakeBody[0].x} y=${snakeBody[0].y}`);
     // if some body coordinates match the food coordinates,
     // it means that the snake ate the food with his mouth.
     // Because the not mouth parts are following the head,
@@ -54,15 +64,15 @@ function posOnSnake(pos, {ignoreHead=false}={}){
     });
 }
 
-function snakeIntersection(){
-    return posOnSnake(snakeBody[0], {ignoreHead:true});
+function snakeIntersection(snakeBody){
+    return posOnSnake(snakeBody, snakeBody[0], {ignoreHead: true});
 }
 
-function snakeGrow(){
+function snakeGrow(snakeBody){
     for(let i = 0; i < remaining_growth; i++){
         snakeBody.push(snakeBody[snakeBody.length-1]);
     }
     remaining_growth = 0;
 }
 
-module.exports = { snakeBody, snakeIntersection, updateSnake, posOnSnake, expandSnake, inputDirection };
+module.exports = { snakeIntersection, updateSnake, posOnSnake, expandSnake, resetSnakePos, resetInputDirection };

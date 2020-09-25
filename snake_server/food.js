@@ -3,14 +3,17 @@ const { posOnSnake, expandSnake }  =  require("./snake.js");
 const { randomGridPos } = require("./grid.js");
 const { GROW_LEN } =  require("./options.js");
 
-let food = randomGridPos();
-
-function updateFood(food){
-    expandSnake(GROW_LEN); // increase growth
+function resetFoodPos(snakeBody){
+    let foodPos = null;
     do{
-        food = randomGridPos(); 
-    }while(posOnSnake(food));  // find new random food pos != snake pos's
-    return food;
+        foodPos = randomGridPos(); 
+    }while(posOnSnake(snakeBody, foodPos));  // find new random food pos != snake pos's
+    return foodPos;
 }
 
-module.exports = { food, updateFood };
+function updateFood(snakeBody){
+    expandSnake(GROW_LEN); // increase growth
+    return resetFoodPos(snakeBody); // return new food pos
+}
+
+module.exports = { updateFood, resetFoodPos };

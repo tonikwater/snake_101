@@ -6,6 +6,9 @@ const form = document.getElementById("form");
 const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 let playerId = null;
 
+
+$( "#dialog" ).dialog();
+
 form.addEventListener("submit", (e) => {
     e.preventDefault(); // dont load some page
     let valid = true;
