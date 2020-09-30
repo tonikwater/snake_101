@@ -1,0 +1,34 @@
+/*
+    SNAKE GAME SKINS | cell_*.png
+    trash: 5
+    _____________________________
+
+    1:
+    --main-bg: #0xA2B6A4;
+    --main-highlight: #1D2020;
+    _____________________________
+
+    2:
+    --main-bg: #7FE104;
+    --main-highlight: #074D00;
+    _____________________________
+
+    6:
+    --main-bg: #6E9C3B;
+    --main-highlight: #204231;
+    _____________________________
+    
+    7: 
+    --main-bg: #4C67AF;
+    --main-highlight: #CAE9FC;
+    _____________________________
+
+    10: 
+    --main-bg: #FFAF4E;
+    --main-highlight: #1B0914;
+    _____________________________
+ 
+    13:
+    --main-bg: #430E14;
+    --main-highlight: #EF7E08;
+ */
