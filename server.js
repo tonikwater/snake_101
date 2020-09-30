@@ -19,7 +19,7 @@ const snake = require("./snake_server/snake.js");
 const PORT = 9090;
 const wss = new WebSocket.Server({ port : PORT });
 let payLoad = null;
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 3;
 let inputDirection = resetInputDirection();
 let snakeBody = resetSnakePos();
 let food = resetFoodPos(snakeBody);
@@ -36,6 +36,7 @@ let currentPlayerId = 0;
 let nextPlayerId = 0;
 let newPlayerId = null;
 let connections = [];
+let participating = null;
 
 // serve html page
 
@@ -60,7 +61,7 @@ wss.on("connection", function connection(ws, req){
                 if(currentPlayerId == result.playerId){
                     inputDirection = result.input;
                 }else{
-                    console.log("(server) refused input");
+                    console.log(`(server) refused input from: ${result.playerId}`);
                 }
                 break;
             case "login":
@@ -85,7 +86,7 @@ wss.on("connection", function connection(ws, req){
                     gameRunning = true;
                     updateSnakeGame(); // trigger once
                     // DEBUGG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    setTimeout(overToDebug, 5000);
+                    setTimeout(overToDebug, 10000);
                     console.log("(server) starting game");
                 }
                 payLoad = {
@@ -102,7 +103,7 @@ wss.on("connection", function connection(ws, req){
                     newPlayerId: newPlayerId,
                     newUsername: newUsername 
                 };
-                wss.clients.forEach(client => {
+                connections.forEach(client => {
                     if(client !== ws){
                         client.send(JSON.stringify(payLoad));
                     }
@@ -115,7 +116,7 @@ wss.on("connection", function connection(ws, req){
             case "restart":
                 console.log("(server) restart request");
                 restartCount++;
-                if(restartCount < MAX_PLAYERS) return;
+                if(restartCount < participating) return;
                 console.log("(server) restarting");
                 restartCount = 0;
                 gameOver = false;
@@ -142,7 +143,8 @@ function updateSnakeGame(){
             type: "over",
             currentPlayerId: currentPlayerId
         };
-        wss.clients.forEach(client => {
+        participating = connections.length;
+        connections.forEach(client => {
             client.send(JSON.stringify(payLoad));
         });
         return;
@@ -163,9 +165,13 @@ function update(){
         // player switch happens
         food = updateFood(snakeBody);
         ateFood = true;
-        nextPlayerId = currentPlayerId == 0 ? 1 : 0;
+        nextPlayerId = getNextPlayerId(currentPlayerId); 
     }
     checkAlive();
+}
+
+function getNextPlayerId(currentPlayerId){
+    return currentPlayerId == playerCount-1 ? 0 : currentPlayerId+1;
 }
 
 function broadcastGame(){

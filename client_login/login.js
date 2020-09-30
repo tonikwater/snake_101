@@ -6,6 +6,7 @@ const username = $("#username");
 // PORT is set in server.js login.js script.js
 const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 let sent = false;
+let full = false;
 
 form.submit(function(e){
     e.preventDefault(); // dont load some page
@@ -29,7 +30,7 @@ function sendInput(){
         showInfo("Waiting ...");
         console.log(`(client) sending username: ${username.val()}`);
     }else{
-        showInfo("Failed to join");
+        showInfo(full ? "Lobby is full" : "Failed to join");
     }
 }
 
@@ -42,10 +43,15 @@ ws.onmessage = function(msg){
     const result = JSON.parse(msg.data);
     switch(result.type){
         case "login":
+            console.log(`(client) received playerId: ${result.playerId}`);
             const playerId = result.playerId;
             localStorage.setItem("playerId", playerId);
             window.location.pathname = "/client_game/game.html";
-            console.log(`(client) received playerId: ${playerId}`);
             break;
     }
+}
+
+ws.onclose = function(){
+    setTimeout(showInfo("Lobby is full"), 1000);
+    full = true;
 }
