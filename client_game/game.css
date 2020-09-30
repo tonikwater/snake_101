@@ -1,6 +1,6 @@
 :root{
-    --main-bg: #A7B9A9;
-    --main-highlight: #4A534D;
+    --main-bg: #6E9C3B;
+    --main-highlight: #204231;
 }
 
 @keyframes myRotation{
@@ -24,7 +24,7 @@ td, th{
 
 #game_board{
     background-color: var(--main-bg);
-    background-image: url("cell_1.png");
+    background-image: url("cell_6.png");
     background-repeat: repeat;
     border: 0.1vh solid var(--main-highlight); 
     background-size: 4% 4%;

@@ -85,8 +85,6 @@ wss.on("connection", function connection(ws, req){
                 if(!gameRunning){
                     gameRunning = true;
                     updateSnakeGame(); // trigger once
-                    // DEBUGG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    setTimeout(overToDebug, 10000);
                     console.log("(server) starting game");
                 }
                 payLoad = {
@@ -128,10 +126,6 @@ wss.on("connection", function connection(ws, req){
         }
     });
 });
-
-function overToDebug(){
-    gameOver = true;
-}
 
 // main game functions 
 
