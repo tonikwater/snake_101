@@ -1,0 +1,74 @@
+:root{
+    --main-bg: #A7B9A9;
+    --main-highlight: #4A534D;
+}
+
+@keyframes myRotation{
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+body{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    background-color: var(--main-bg);
+}
+
+td, th{
+    width: 7vw;
+}
+
+#game_board{
+    background-color: var(--main-bg);
+    background-image: url("cell_1.png");
+    background-repeat: repeat;
+    border: 0.1vh solid var(--main-highlight); 
+    background-size: 4% 4%;
+    width: 80vmin;
+    height: 80vmin;
+    display: grid;
+    grid-template-rows: repeat(25, 1fr);
+    grid-template-columns: repeat(25, 1fr);
+}
+
+.snake{
+    background-color: var(--main-highlight);
+    max-height: 2vmin;
+    max-width: 2vmin;
+    margin: 0.6vmin;
+    border-radius: 0.5vmin;
+}
+
+.food{
+    /* animated food */
+    /*
+    background-color: var(--main-highlight);
+    max-height: 3vmin;
+    max-width: 3vmin;
+    margin: 0.5vmin;
+    clip-path: polygon(
+        0 25%, 50% 25%, 50% 0, 75% 0,
+        75% 50%, 100% 50%, 100% 75%, 50% 75%,
+        50% 100%, 25% 100%, 25% 50%, 0 50%
+    );
+    border-radius: 10vmin;
+    animation: myRotation 0.5s linear infinite;
+    */
+    /* static food */
+    background-color: var(--main-highlight);
+    max-height: 2.5vmin;
+    max-width: 2.5vmin;
+    margin: 0.9vmin;
+    border-radius: 1vmin;
+    transform: rotate(45deg);
+}
+
+.mytext{
+    text-align: center;
+    color: var(--main-highlight);
+    font-family: "Courier New", Courier, monospace;
+}

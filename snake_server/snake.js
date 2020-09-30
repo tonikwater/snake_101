@@ -28,8 +28,6 @@ function updateSnake(snakeBody, inputDirection){
     head.x += inputDirection.x;
     head.y += inputDirection.y;
 
-    console.log(`snake: x=${head.x} y=${head.y})`);
-
     // continue snake on opposite side if overlap
     if(!GRID_BARRIER && outsideGrid(head)){
         if(head.x < 1){
@@ -51,7 +49,6 @@ function expandSnake(amount){
 }
 
 function posOnSnake(snakeBody, pos, {ignoreHead=false}={}){
-    console.log(`(posOnSnake) x=${snakeBody[0].x} y=${snakeBody[0].y}`);
     // if some body coordinates match the food coordinates,
     // it means that the snake ate the food with his mouth.
     // Because the not mouth parts are following the head,

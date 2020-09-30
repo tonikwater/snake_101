@@ -4,28 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Login</title>
-    <script src="snake_client/login.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="client_login/login.css">
+    <script src="client_login/login.js" defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 </head>
 <body>
-    <div id="dialog" title="Basic dialog">
-        <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
-    </div>
-    <div id="error"></div>
-    <form id="form" action="/" method="GET">
-        <div>
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" required>
-            <button type="submit">Submit</button>
+    <form id="myform" action="/" method="GET">
+        <div class="container">
+            <h1>Snake 101</h1>
+            <input type="text" name="username" placeholder="Username" id="username" required>
+            <button type="submit">Join</button>
+            <div id="myinfo">_</div>
         </div>
     </form>
-    <br>
-    <div>
-        <li>
-            <a href="snake_client/game.html">Join game</a>
-        </li>
-    </div>
 </body>
 </html>

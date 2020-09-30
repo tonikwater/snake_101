@@ -39,9 +39,10 @@ let connections = [];
 
 // serve html page
 
-app.listen(PORT+1, () => console.log(`listening on http port ${PORT+1}`));
+app.listen(PORT+1, () => console.log(`(server) listening on http port ${PORT+1}`));
 app.get("/", (req, res) => res.sendFile(`${__dirname}/login.html`));
-app.use("/snake_client", express.static("./snake_client/"));
+app.use("/client_login", express.static("./client_login/"));
+app.use("/client_game", express.static("./client_game/"));
 
 // server websocket 
 
@@ -63,21 +64,21 @@ wss.on("connection", function connection(ws, req){
                 }
                 break;
             case "login":
-                console.log("(server) login");
+                console.log(`(server) login from: ${result.username}`);
                 newPlayerId = pseudoRandomId++;
                 allPlayers[newPlayerId] = {
                     username: result.username,
                     score: 0
                 };
                 payLoad = {
-                    "type" : "login",
-                    "playerId" : newPlayerId,
+                    type: "login",
+                    playerId: newPlayerId,
                 };
                 ws.send(JSON.stringify(payLoad));
                 ws.terminate();
                 break;
             case "connect":
-                console.log("(server) connect");
+                console.log(`(server) connect from: ${allPlayers[result.playerId].username}`);
                 playerCount++;
                 // start game
                 if(!gameRunning){
@@ -88,8 +89,8 @@ wss.on("connection", function connection(ws, req){
                     console.log("(server) starting game");
                 }
                 payLoad = {
-                    "type" : "connect",
-                    "allPlayers" : allPlayers,
+                    type: "connect",
+                    allPlayers: allPlayers,
                     growLen: GROW_LEN
                 };
                 ws.send(JSON.stringify(payLoad));
@@ -97,9 +98,9 @@ wss.on("connection", function connection(ws, req){
                 newPlayerId = result.playerId;
                 let newUsername = allPlayers[newPlayerId].username;
                 payLoad = {
-                    "type" : "join",
-                    "newPlayerId" : newPlayerId,
-                    "newUsername" : newUsername 
+                    type: "join",
+                    newPlayerId: newPlayerId,
+                    newUsername: newUsername 
                 };
                 wss.clients.forEach(client => {
                     if(client !== ws){
@@ -138,8 +139,8 @@ function updateSnakeGame(){
     if(gameOver){
         console.log("(server) GAME OVER !");
         let payLoad = {
-            "type" : "over",
-            "currentPlayerId" : currentPlayerId
+            type: "over",
+            currentPlayerId: currentPlayerId
         };
         wss.clients.forEach(client => {
             client.send(JSON.stringify(payLoad));
@@ -169,14 +170,13 @@ function update(){
 
 function broadcastGame(){
     console.log("(server) broadcast");
-    console.log(`live: x=${snakeBody[0].x} y=${snakeBody[0].y})`);
     let payLoad = {
-        "type" : "new",
-        "snakeBody" : snakeBody,
-        "food" : food,
-        "currentPlayerId" : currentPlayerId,
-        "inputDirection" : inputDirection,
-        "ateFood" : ateFood 
+        type: "new",
+        snakeBody: snakeBody,
+        food: food,
+        currentPlayerId: currentPlayerId,
+        inputDirection: inputDirection,
+        ateFood: ateFood 
     };
     connections.forEach(client => {
         client.send(JSON.stringify(payLoad));

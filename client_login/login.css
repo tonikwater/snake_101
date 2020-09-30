@@ -1,0 +1,51 @@
+:root{
+    --main-bg: #a7b9a9;
+    --main-highlight: #4a534d;
+}
+
+*{
+    font-family: "Courier New", Courier, monospace;
+}
+
+body{
+    background-color: var(--main-bg);
+}
+
+button{
+    background: none;
+    color: var(--main-highlight);
+    border: .2vh solid var(--main-highlight);
+    outline: none;
+}
+
+button[type=submit]:hover{
+    outline: none;
+    box-shadow: 0 0 0 .1vh var(--main-highlight);
+}
+
+input{
+    background: none; 
+    padding: 0 1vh;
+    border: .2vh solid var(--main-highlight);
+    width: 10vw;
+}
+
+input[type=text]:focus{
+    outline: none;
+    box-shadow: 0 0 0 .1vh var(--main-highlight);
+}
+
+h1{
+    color: var(--main-highlight);
+}
+
+.container{
+    text-align: center;
+    border: .35vh dashed var(--main-highlight);
+    margin: 30vh 38vw 0; 
+}
+
+#myinfo{
+    margin: 1vh 0 1.5vh;
+    color: var(--main-bg);
+}
