@@ -4,6 +4,7 @@
 const express = require("express");
 const app = express();
 const WebSocket = require("ws");
+const bodyParser = require("body-parser");
 
 // local imports 
 
@@ -11,7 +12,6 @@ const { snakeIntersection, updateSnake, posOnSnake, resetSnakePos, resetInputDir
 const { updateFood, resetFoodPos } = require("./snake_server/food.js");
 const { outsideGrid }  = require("./snake_server/grid.js");
 const { SNAKE_SPEED, GRID_BARRIER, GROW_LEN }  = require("./snake_server/options.js");
-const snake = require("./snake_server/snake.js");
 
 // variables
 
@@ -39,11 +39,29 @@ let connections = [];
 let participating = null;
 
 // serve html page
+// add skins, add music + sound, input: allow change/render
 
-app.listen(PORT+1, () => console.log(`(server) listening on http port ${PORT+1}`));
-app.get("/", (req, res) => res.sendFile(`${__dirname}/login.html`));
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use("/client_login", express.static("./client_login/"));
 app.use("/client_game", express.static("./client_game/"));
+
+app.listen(PORT+1, () => console.log(`(server) listening on http port ${PORT+1}`));
+
+app.get("/", (req, res) => {
+    console.log("(server) sending login.html");
+    res.sendFile(`${__dirname}/login.html`)
+});
+
+app.post("/submit_login", (req, res) => {
+    let username = req.body.username;
+    console.log(`(server) login from: ${username}`);
+    newPlayerId = pseudoRandomId++;
+    allPlayers[newPlayerId] = {
+        username: username,
+        score: 0
+    };
+    res.redirect("/client_game/game.html"); 
+});
 
 // server websocket 
 
@@ -64,22 +82,9 @@ wss.on("connection", function connection(ws, req){
                     console.log(`(server) refused input from: ${result.playerId}`);
                 }
                 break;
-            case "login":
-                console.log(`(server) login from: ${result.username}`);
-                newPlayerId = pseudoRandomId++;
-                allPlayers[newPlayerId] = {
-                    username: result.username,
-                    score: 0
-                };
-                payLoad = {
-                    type: "login",
-                    playerId: newPlayerId,
-                };
-                ws.send(JSON.stringify(payLoad));
-                ws.terminate();
-                break;
             case "connect":
-                console.log(`(server) connect from: ${allPlayers[result.playerId].username}`);
+                let username = result.username;  
+                console.log(`(server) connect from: ${username}`);
                 playerCount++;
                 // start game
                 if(!gameRunning){
@@ -87,19 +92,26 @@ wss.on("connection", function connection(ws, req){
                     updateSnakeGame(); // trigger once
                     console.log("(server) starting game");
                 }
+                let playerId = null; 
+                // reverse search: playerId for username
+                // because user dont know his playerId yet
+                Object.keys(allPlayers).forEach(key => {
+                    if(allPlayers[key].username == username){
+                        playerId = key;
+                    }
+                });
                 payLoad = {
                     type: "connect",
+                    playerId: playerId, 
                     allPlayers: allPlayers,
                     growLen: GROW_LEN
                 };
                 ws.send(JSON.stringify(payLoad));
                 // inform others about new player
-                newPlayerId = result.playerId;
-                let newUsername = allPlayers[newPlayerId].username;
                 payLoad = {
                     type: "join",
-                    newPlayerId: newPlayerId,
-                    newUsername: newUsername 
+                    newPlayerId: playerId,
+                    newUsername: username 
                 };
                 connections.forEach(client => {
                     if(client !== ws){

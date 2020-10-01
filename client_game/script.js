@@ -9,7 +9,8 @@ import { setInputDirection } from "./input.js";
 // PORT is set in server.js login.js script.js
 export const ws = new WebSocket(`ws://${document.location.hostname}:9090`);
 const gameBoard = $("#game_board");
-export const playerId = localStorage.getItem("playerId");
+const username = localStorage.getItem("username");
+let playerId = null;
 let currentPlayerId = null;
 let allPlayers = null; // {id: {username: "", score: 0}}
 // prevents from cheating when inputing more than 1 key per render
@@ -19,6 +20,10 @@ let allPlayers = null; // {id: {username: "", score: 0}}
 let allowMove = false;
 let snakeLen = 1;
 let growLen = null;
+
+export function getPlayerId(){
+    return playerId;
+}
 
 export function getAllowMove(){
     return allowMove;
@@ -33,7 +38,7 @@ export function setAllowMove(newAllowMove){
 ws.onopen = function(e){
     const payLoad = {
         type: "connect",
-        playerId: playerId
+        username: username 
     };
     ws.send(JSON.stringify(payLoad));
     console.log("(client) initialized ws connection");
@@ -61,6 +66,7 @@ ws.onmessage = function(msg){
             drawSnakeLen(snakeLen); 
             break;
         case "connect":
+            playerId = result.playerId;
             console.log(`(client) you connected: ${playerId}`);
             allPlayers = result.allPlayers;
             growLen = result.growLen;

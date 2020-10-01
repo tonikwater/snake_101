@@ -1,5 +1,5 @@
 
-import { ws, playerId, getAllowMove, setAllowMove } from "./script.js";
+import { ws, getPlayerId, getAllowMove, setAllowMove } from "./script.js";
 
 let inputDirection = {x: 0, y: 0};
 
@@ -44,7 +44,7 @@ function transmitKeyInput(direction){
     console.log("(client) transmitting input");
     let payLoad = {
         type: "key",
-        playerId: playerId,
+        playerId: getPlayerId(),
         input: direction
     };
     ws.send(JSON.stringify(payLoad));
