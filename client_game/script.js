@@ -17,20 +17,11 @@ let allPlayers = null; // {id: {username: "", score: 0}}
 // at 1st set to valid move, then to move which is possible from this move
 // but not the one before => move gets rendered which is illegal
 // in terms of the game rules
-let allowMove = false;
 let snakeLen = 1;
 let growLen = null;
 
 export function getPlayerId(){
     return playerId;
-}
-
-export function getAllowMove(){
-    return allowMove;
-}
-
-export function setAllowMove(newAllowMove){
-    allowMove = newAllowMove;
 }
 
 // client websocket
@@ -49,7 +40,7 @@ ws.onmessage = function(msg){
     switch(result.type){
         case "new":
             console.log("(client) drawing");
-            allowMove = true;
+            setInputDirection(result.inputDirection);
             const snakeBody = result.snakeBody;
             const food = result.food;
             currentPlayerId = result.currentPlayerId;
@@ -57,7 +48,6 @@ ws.onmessage = function(msg){
             gameBoard.text("");
             if(ateFood){
                 // allows correct possible move directions after player switch
-                setInputDirection(result.inputDirection);
                 snakeLen += growLen;
             }
             drawSnake(snakeBody);
