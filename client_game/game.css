@@ -24,7 +24,7 @@ td, th{
 
 #game_board{
     background-color: var(--main-bg);
-    background-image: url("cell_6.png");
+    background-image: url("skins/cell_6.png");
     background-repeat: repeat;
     border: 0.1vh solid var(--main-highlight); 
     background-size: 4% 4%;

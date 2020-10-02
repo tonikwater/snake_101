@@ -39,7 +39,7 @@ let connections = [];
 let participating = null;
 
 // serve html page
-// add skins, add music + sound, input: allow change/render
+// add skins, add music + sound
 
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use("/client_login", express.static("./client_login/"));

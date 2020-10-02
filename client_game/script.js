@@ -24,6 +24,13 @@ export function getPlayerId(){
     return playerId;
 }
 
+// play audio
+
+const audioElem = $("<audio></audio>");
+audioElem.prop("src", "sounds/spongebob.mp3");
+audioElem.prop("autoplay", true);
+audioElem.prop("loop", true);
+
 // client websocket
 
 ws.onopen = function(e){
@@ -49,6 +56,7 @@ ws.onmessage = function(msg){
             if(ateFood){
                 // allows correct possible move directions after player switch
                 snakeLen += growLen;
+                new Audio("sounds/grow.mp3").play();
             }
             drawSnake(snakeBody);
             drawFood(food);
@@ -84,13 +92,16 @@ ws.onmessage = function(msg){
             currentPlayerId = result.currentPlayerId;
             let title = null;
             let msg = null; 
+            let audio = null;
             if(currentPlayerId != playerId){
                 title = `CONGRATS, ${allPlayers[playerId].username} !`;
                 msg = "You won !";
+                audio = "sounds/win.mp3";
                 console.log("(client) winner");
             }else{
                 title = `GAME OVER, ${allPlayers[playerId].username} !`;
                 msg = "Maybe next time !";
+                audio = "sounds/loose.mp3";
                 console.log("(client) looser");
             }
             const buttons = {
@@ -107,6 +118,7 @@ ws.onmessage = function(msg){
                         $(this).dialog("close");
                     }
             }
+            new Audio(audio).play();
             $("#restart_content").text(msg);
             $("#restart_dialog").dialog({
                 title: title,
