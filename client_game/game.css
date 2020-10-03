@@ -1,6 +1,26 @@
 :root{
-    --main-bg: #6E9C3B;
-    --main-highlight: #204231;
+    --main-bg: #87D841;
+    --main-highlight: #409669;
+}
+
+::placeholder{
+    color: var(--main-highlight);
+}
+
+*{
+    font-family: "Courier New", Courier, monospace;
+}
+
+body{
+    background-color: var(--main-bg);
+}
+
+button{
+    background: none;
+    color: var(--main-highlight);
+    border: .2vh solid var(--main-highlight);
+    outline: none;
+}
 }
 
 @keyframes myRotation{
@@ -24,7 +44,7 @@ td, th{
 
 #game_board{
     background-color: var(--main-bg);
-    background-image: url("skins/cell_6.png");
+    background-image: url("skins/cell_9.png");
     background-repeat: repeat;
     border: 0.1vh solid var(--main-highlight); 
     background-size: 4% 4%;

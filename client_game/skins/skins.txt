@@ -1,0 +1,89 @@
+/*
+    SNAKE GAME SKINS | cell_*.png
+
+    skins.png:
+     1  2  3  4
+        6  7  8
+     9 10 11 12
+    13 14 15 16
+
+    replace variables in:
+    - client_game/game.css
+    - client_login/login.css
+    _____________________________
+
+    1 (grey green)
+    --main-bg: #A2B6A4;
+    --main-highlight: #1D2020;
+    _____________________________
+
+    2 (neon green)
+    --main-bg: #7FE104;
+    --main-highlight: #074D00;
+    _____________________________
+
+    3 (yellow)
+    --main-bg: #EEFE34;
+    --main-highlight: #3C5400;
+    _____________________________
+
+    4 (blackboard green)
+    --main-bg: #249C54;
+    --main-highlight: #0F3C39;
+    _____________________________
+
+    6 (green)
+    --main-bg: #6E9C3B;
+    --main-highlight: #204231;
+    _____________________________
+    
+    7 (blueprint)
+    --main-bg: #4C67AF;
+    --main-highlight: #CAE9FC;
+    _____________________________
+    
+    8 (grey blue)
+    --main-bg: #B0DCCD;
+    --main-highlight: #382D5B;
+    _____________________________
+    
+    9 (green lcd)
+    --main-bg: #87D841;
+    --main-highlight: #409669;
+    _____________________________
+
+    10 (light orange)
+    --main-bg: #FFAF4E;
+    --main-highlight: #1B0914;
+    _____________________________
+
+    11 (light blue)
+    --main-bg: #ABE1E0;
+    --main-highlight: #000950;
+    _____________________________
+
+    12 (halloween)
+    --main-bg: #100911;
+    --main-highlight: #EF7E08;
+    _____________________________
+ 
+    13 (lava)
+    --main-bg: #430E14;
+    --main-highlight: #EF7E08;
+    _____________________________
+
+    14 (lcd blueprint) 
+    --main-bg: #4156D8;
+    --main-highlight: #AAAAAA;
+    _____________________________
+
+    15 (hacker green) 
+    --main-bg: #0D230A;
+    --main-highlight: #81FF7B;
+    _____________________________
+
+    16 (red white) 
+    --main-bg: #D4D2D2;
+    --main-highlight: #D84141;
+    _____________________________
+ */
