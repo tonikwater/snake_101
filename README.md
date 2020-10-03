@@ -1,4 +1,4 @@
-# snake_multiplayer
+# snake_101
 
 **Credits**
 
