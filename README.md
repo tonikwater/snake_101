@@ -1,5 +1,11 @@
 # snake_101
 
+**Credits**
+
+Big thanks to Web Dev Simplified for his snake game tutorial and to Hussein Nasser for his websocket multiplayer game tutorial !
+
+This knowledge allowed me to create this project. Enjoy !
+
 ## Description
 
 A server running a local multiplayer browser snake game. Players connect to the website and control the snake alternately. If the snake eats the food, the game switches to the next player. The player who bites himself looses, all others win.
